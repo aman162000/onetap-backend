@@ -36,7 +36,7 @@ class CustomUserManager(UserManager):
 
 class User(AbstractUser):
     email = models.EmailField(_("email address"), blank=False, unique=True)
-
+    username = None
     is_teacher = models.BooleanField(default=False)
     is_student = models.BooleanField(default=False)
     USERNAME_FIELD = "email"
