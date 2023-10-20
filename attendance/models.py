@@ -1,6 +1,7 @@
 from core.models import BaseModel
-from account.models import Student, Subject
+from account.models import Student, Subject, Teacher
 from django.db import models
+from beacon.models import Beacon
 
 # Create your models here.
 
@@ -9,9 +10,9 @@ class Attendance(BaseModel):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     subject = models.ForeignKey(Subject, on_delete=models.CASCADE)
     is_present = models.BooleanField(default=False)
-
-    class Meta:
-        unique_together = ["student", "subject"]
+    beacon = models.CharField(
+        max_length=255, blank=False, null=False)
+    taken_by = models.ForeignKey(Teacher, on_delete=models.CASCADE)
 
     @classmethod
     def mark_attendance(cls, student, subject, is_present=False):

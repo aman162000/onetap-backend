@@ -19,5 +19,11 @@ from django.urls import path, include
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('account/', include("account.urls"))
+    path('account/', include("account.urls")),
+    path('beacon/', include("beacon.urls")),
+    path("core/", include("core.urls")),
+    path("attendance/", include("attendance.urls"))
 ]
+admin.site.site_header = "OneTap Admin"
+admin.site.site_title = "OneTap Admin Portal"
+admin.site.index_title = "Welcome to OneTap Attendance Portal"

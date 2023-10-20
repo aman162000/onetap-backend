@@ -9,46 +9,57 @@ https://docs.djangoproject.com/en/4.2/topics/settings/
 For the full list of settings and their values, see
 https://docs.djangoproject.com/en/4.2/ref/settings/
 """
-
+import os
+import dotenv
 from pathlib import Path
-
+from datetime import timedelta
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+dotenv_file = os.path.join(BASE_DIR, '.env')
+
+if (os.path.isfile(dotenv_file)):
+    dotenv.load_dotenv(dotenv_file)
 
 # Quick-start development settings - unsuitable for production
 # See https://docs.djangoproject.com/en/4.2/howto/deployment/checklist/
 
 # SECURITY WARNING: keep the secret key used in production secret!
-SECRET_KEY = 'django-insecure-f=gu1@d&dxn$8)c)1f#h@^9kq_j3^c%68nu852gk1$@1z4rf6d'
+SECRET_KEY = os.environ["SECRET_KEY"]
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["*"]
 
 AUTH_USER_MODEL = "account.User"
 
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": (
-        'rest_framework.authentication.TokenAuthentication',
-    )
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ), 'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
 }
 # Application definition
 
 INSTALLED_APPS = [
+    "daphne",
     'django.contrib.admin',
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'cloudinary_storage',
+    'cloudinary',
     'rest_framework',
     'rest_framework.authtoken',
     'djoser',
     'account',
     'core',
-    'attendance'
+    'attendance',
+    'beacon'
 ]
 
 MIDDLEWARE = [
@@ -78,9 +89,14 @@ TEMPLATES = [
         },
     },
 ]
+CHANNEL_LAYERS = {
+    "default": {
+        "BACKEND": "channels.layers.InMemoryChannelLayer"
+    }
+}
 
 WSGI_APPLICATION = 'onetap.wsgi.application'
-
+ASGI_APPLICATION = "onetap.asgi.application"
 
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
@@ -136,3 +152,20 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 DJOSER = {
     "PASSWORD_RESET_CONFIRM_URL": "/account/auth/users/user-reset-password-confirm/{uid}/{token}/"
 }
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=600),
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
+    'AUTH_HEADER_TYPES': ('Bearer',),
+    'AUTH_HEADER_NAME': 'HTTP_AUTHORIZATION',
+    'USER_ID_FIELD': 'uid',
+    'USER_ID_CLAIM': 'user_id',
+    "TOKEN_OBTAIN_SERIALIZER": "account.serializers.CustomTokenObtainSerializer"
+}
+CLOUDINARY_STORAGE = {
+    'CLOUD_NAME': os.environ['CLOUD_NAME'],
+    'API_KEY': os.environ['CLOUDINARY_API_KEY'],
+    'API_SECRET': os.environ['CLOUDINARY_API_SECRET'],
+    'EXCLUDE_DELETE_ORPHANED_MEDIA_PATHS': (),
+}
+MEDIA_URL = '/media/'  # or any prefix you choose
+DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
