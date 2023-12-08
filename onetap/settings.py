@@ -198,3 +198,6 @@ CLOUDINARY_STORAGE = {
 }
 MEDIA_URL = '/media/'  # or any prefix you choose
 DEFAULT_FILE_STORAGE = 'cloudinary_storage.storage.MediaCloudinaryStorage'
+CSRF_TRUSTED_ORIGINS = [
+    'https://onetap.onrender.com'
+]
