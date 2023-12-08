@@ -103,7 +103,7 @@ else:
         "default": {
             "BACKEND": "channels_redis.core.RedisChannelLayer",
             "CONFIG": {
-                "host": [(os.environ["REDIS_PORT"], 6379)]
+                "hosts": [(os.environ["REDIS_PORT"], 6379)]
             }
         }
     }
