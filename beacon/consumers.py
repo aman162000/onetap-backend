@@ -4,7 +4,7 @@ from .models import Beacon
 from account.models import Student
 from attendance.models import Attendance
 from channels.db import database_sync_to_async
-
+from channels.exceptions import StopConsumer
 
 class BeaconConsumer(AsyncWebsocketConsumer):
 
@@ -33,3 +33,7 @@ class BeaconConsumer(AsyncWebsocketConsumer):
             data = {"error": "User is not authenticated"}
 
         return data
+
+    async def disconnect(self, close_code):
+        
+        raise StopConsumer()
