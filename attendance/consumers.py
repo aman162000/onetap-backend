@@ -24,7 +24,7 @@ class AttendanceConsumer(AsyncWebsocketConsumer):
             user_group_name = f"user_{user.uid}"
             await self.channel_layer.group_discard(user_group_name, self.channel_name)
 
-            raise StopConsumer
+            raise StopConsumer()
 
     async def update_attendance(self, event):
         await self.send(json.dumps(event))
