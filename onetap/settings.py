@@ -64,6 +64,7 @@ INSTALLED_APPS = [
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
+    "whitenoise.middleware.WhiteNoiseMiddleware",
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
@@ -89,11 +90,23 @@ TEMPLATES = [
         },
     },
 ]
-CHANNEL_LAYERS = {
-    "default": {
-        "BACKEND": "channels.layers.InMemoryChannelLayer"
+
+if DEBUG:
+
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels.layers.InMemoryChannelLayer"
+        }
     }
-}
+else:
+    CHANNEL_LAYERS = {
+        "default": {
+            "BACKEND": "channels_redis.core.RedisChannelLayer",
+            "CONFIG": {
+                "host": [(os.environ["REDIS_PORT"], 6379)]
+            }
+        }
+    }
 
 WSGI_APPLICATION = 'onetap.wsgi.application'
 ASGI_APPLICATION = "onetap.asgi.application"
@@ -101,12 +114,28 @@ ASGI_APPLICATION = "onetap.asgi.application"
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': BASE_DIR / 'db.sqlite3',
+STATICFILES_STORAGE = "whitenoise.storage.CompressedManifestStaticFilesStorage"
+
+if DEBUG:
+
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.sqlite3',
+            'NAME': BASE_DIR / 'db.sqlite3',
+        }
     }
-}
+
+else:
+    DATABASES = {
+        'default': {
+            'ENGINE': 'django.db.backends.postgresql',
+            'NAME': os.environ["DB_NAME"],
+            'USER': os.environ["DB_USER"],
+            'PASSWORD': os.environ["DB_PASSWORD"],
+            'HOST': os.environ["DB_HOST"],
+            'PORT': os.environ["DB_PORT"],
+        }
+    }
 
 
 # Password validation

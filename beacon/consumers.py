@@ -19,6 +19,7 @@ class BeaconConsumer(AsyncWebsocketConsumer):
     @database_sync_to_async
     def fetch(self):
         user = self.scope["user"]
+        data = {}
         if user.is_authenticated:
             beacon = Beacon.objects.get(
                 minor_value=int(self.scope["minor_value"]))

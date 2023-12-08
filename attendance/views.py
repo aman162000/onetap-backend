@@ -51,25 +51,23 @@ def get_attendance_data(user):
 
 
 def get_subject_attendance_data(teacher):
-    subjects_taught = teacher.subject.all()
 
+    subjects_taught = teacher.subject.prefetch_related('attendance_set').all()
     subject_data = []
 
     for subject in subjects_taught:
-        attendance_records = Attendance.objects.filter(subject=subject)
-        print(attendance_records)
-        total_students = attendance_records.count()
-        print(subject.attendance_set)
+        attendance_records = subject.attendance_set.all()
+        subject_attendance = attendance_records.first()
+        attendance_date = subject_attendance.created_at if subject_attendance else None
+
         subject_info = {
             'uid': subject.uid,
-            'date': subject.attendance_set.created_at,
+            'date': attendance_date,
             'subject': subject.name,
-            'total_present': total_students,
-            'total_students': total_students,
+            "taken_by": subject_attendance.taken_by.full_name
         }
 
         subject_data.append(subject_info)
-
     return subject_data
 
 

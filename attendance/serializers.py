@@ -36,5 +36,4 @@ class AggregatedAttendanceSerializer(serializers.Serializer):
     uid = serializers.UUIDField()
     date = serializers.DateTimeField()
     subject = serializers.CharField()
-    total_present = serializers.IntegerField()
-    total_students = serializers.IntegerField()
+    taken_by = serializers.CharField()
